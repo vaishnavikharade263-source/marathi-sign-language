@@ -107,7 +107,14 @@ Dahibavkar, S. et al. (2020). Marathi Sign Language Recognition.
 
 ## Dataset
 
-The training dataset used for this project is stored externally due to GitHub’s file size limits.  
-You can download it here: [OneDrive Dataset Link](https://onedrive.live.com/your-link-here)
+This project uses the [Marathi Sign Language dataset](https://huggingface.co/datasets/VinayHajare/Marathi-Sign-Language) hosted on Hugging Face.  
 
-Note: The dataset is ~235 MB in Parquet format. Please place it in the `data/` folder before running the code.
+- Format: Parquet (~241 MB)  
+- Classes: 43 (Marathi sign language characters)  
+- Total samples: ~50,000  
+
+To run the project:
+1. Download the dataset from Hugging Face.
+2. Place the file in the `data/` folder.
+3. Ensure the filename matches `train-00000-of-00001.parquet`.
+
