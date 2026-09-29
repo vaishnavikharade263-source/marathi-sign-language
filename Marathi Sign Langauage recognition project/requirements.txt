@@ -1,5 +1,5 @@
 opencv-python
-mediapipe==0.10.21
+mediapipe
 # ^ pinned: mediapipe 0.10.31+ removed the mp.solutions.hands API this project
 # uses (Google deprecated it in favor of a newer Tasks API). 0.10.21 is
 # confirmed to still include it. If you ever migrate to the new Tasks API,
