@@ -104,3 +104,10 @@ Bhinganiy, S. et al. (2025). Real‑Time Marathi Sign Language Translation.
 Gaur, V. et al. (2022). Conversion of Sign Language into Devanagari Text Using CNN.
 
 Dahibavkar, S. et al. (2020). Marathi Sign Language Recognition.
+
+## Dataset
+
+The training dataset used for this project is stored externally due to GitHub’s file size limits.  
+You can download it here: [OneDrive Dataset Link](https://onedrive.live.com/your-link-here)
+
+Note: The dataset is ~235 MB in Parquet format. Please place it in the `data/` folder before running the code.
