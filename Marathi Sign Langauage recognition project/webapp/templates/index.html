@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Marathi Sign Language Recognition</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="wrap">
+    <div class="top-nav">
+      <div class="brand">मराठी <span>Sign</span> Recognition</div>
+      <nav>
+        <a href="/">Live</a>
+        <a href="/reference">Reference chart</a>
+        <a href="/logs">Session log</a>
+      </nav>
+    </div>
+
+    <h1>Show a gesture, hear the letter read back instantly.</h1>
+    <p class="subtitle">
+      MediaPipe reads your hand's landmarks in the browser feed below; a
+      trained classifier maps them to a Marathi letter in real time, and
+      your browser speaks it aloud the moment it's confident.
+    </p>
+
+    {% if not model_ready %}
+    <div class="warning-box">
+      No trained model found yet. Run <code>python preprocessing.py</code>
+      and <code>python train_model.py</code> from the project root, then
+      reload this page.
+    </div>
+    {% else %}
+    <div class="stage">
+      <div class="camera-panel">
+        <img id="videoFeed" src="" alt="Live camera feed">
+        <div class="camera-placeholder" id="placeholder">
+          Press "Start camera" to begin
+        </div>
+      </div>
+
+      <div class="letter-panel">
+        <div class="letter-display">
+          <div class="glyph" id="glyph">—</div>
+          <div class="status" id="status">Waiting for a hand gesture</div>
+        </div>
+
+        <div>
+          <div class="metric-row"><span>Model in use</span><strong>{{ model_name }}</strong></div>
+          <div class="metric-row"><span>Agreement</span><strong id="confidenceMetric">—</strong></div>
+          <div class="metric-row"><span>Frames / sec</span><strong id="fpsMetric">—</strong></div>
+        </div>
+
+        <div class="controls">
+          <button class="btn-primary" id="startBtn">Start camera</button>
+          <button class="btn-secondary" id="stopBtn">Stop</button>
+        </div>
+
+        <label class="speak-toggle">
+          <input type="checkbox" id="speakToggle" checked>
+          Speak recognized letters aloud
+        </label>
+      </div>
+    </div>
+
+    <div class="reference-strip">
+      <h2>Letters this model currently recognizes</h2>
+      <div class="letter-chips">
+        {% for letter in letters %}
+        <span>{{ letter }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <script>
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const videoFeed = document.getElementById('videoFeed');
+    const placeholder = document.getElementById('placeholder');
+    const glyph = document.getElementById('glyph');
+    const status = document.getElementById('status');
+    const confidenceMetric = document.getElementById('confidenceMetric');
+    const fpsMetric = document.getElementById('fpsMetric');
+    const speakToggle = document.getElementById('speakToggle');
+
+    let pollTimer = null;
+    let lastSpoken = null;
+    let lastSpeakTime = 0;
+
+    function speakLetter(letter) {
+      if (!speakToggle.checked) return;
+      const now = Date.now();
+      if (letter === lastSpoken && now - lastSpeakTime < 2000) return;
+      const synth = window.speechSynthesis;
+      // Chrome/Edge can get stuck paused after cancel(): only cancel if something is
+      // actually queued, then resume() before speaking.
+      if (synth.speaking || synth.pending) synth.cancel();
+      synth.resume();
+      const utterance = new SpeechSynthesisUtterance(letter);
+      const voices = synth.getVoices();
+      const voice = voices.find(v => v.lang === 'mr-IN') || voices.find(v => v.lang.startsWith('mr'))
+                 || voices.find(v => v.lang === 'hi-IN');   // Hindi voice reads Devanagari if no Marathi voice
+      if (voice) { utterance.voice = voice; utterance.lang = voice.lang; } else { utterance.lang = 'mr-IN'; }
+      synth.speak(utterance);
+      lastSpoken = letter;
+      lastSpeakTime = now;
+    }
+
+    function pollLetter() {
+      fetch('/current_letter')
+        .then(r => r.json())
+        .then(data => {
+          if (data.letter) {
+            glyph.textContent = data.letter;
+            status.textContent = 'Recognized';
+            confidenceMetric.textContent = Math.round((data.confidence || 0) * 100) + '%';
+            speakLetter(data.letter);
+          } else {
+            glyph.textContent = '—';
+            status.textContent = 'Waiting for a hand gesture';
+            confidenceMetric.textContent = '—';
+            lastSpoken = null;   // re-speak when a hand comes back
+          }
+          fpsMetric.textContent = data.fps ? data.fps.toFixed(1) : '—';
+        })
+        .catch(() => {});
+    }
+
+    startBtn.addEventListener('click', () => {
+      placeholder.style.display = 'none';
+      videoFeed.src = '/video_feed?' + Date.now();
+      if (!pollTimer) pollTimer = setInterval(pollLetter, 350);
+    });
+
+    stopBtn.addEventListener('click', () => {
+      fetch('/stop_feed', { method: 'POST' });
+      videoFeed.src = '';
+      placeholder.style.display = 'flex';
+      status.textContent = 'Stopped';
+      if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+    });
+  </script>
+</body>
+</html>

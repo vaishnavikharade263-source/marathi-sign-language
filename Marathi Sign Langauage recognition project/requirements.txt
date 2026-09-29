@@ -1,0 +1,14 @@
+opencv-python
+mediapipe==0.10.21
+# ^ pinned: mediapipe 0.10.31+ removed the mp.solutions.hands API this project
+# uses (Google deprecated it in favor of a newer Tasks API). 0.10.21 is
+# confirmed to still include it. If you ever migrate to the new Tasks API,
+# this pin can be removed.
+numpy
+pandas
+pyarrow
+pillow
+scikit-learn
+joblib
+pyttsx3
+flask

@@ -1,0 +1,26 @@
+{
+  "results": {
+    "RandomForest": {
+      "cv_accuracy_mean": 0.9942528735632183,
+      "cv_accuracy_std": 0.00498378928475376,
+      "test_accuracy": 0.9934895833333334,
+      "train_time_sec": 2.972663900000043,
+      "inference_latency_ms": 50.34970849999809
+    },
+    "SVM (RBF)": {
+      "cv_accuracy_mean": 0.9979307699429917,
+      "cv_accuracy_std": 0.0019774230968619163,
+      "test_accuracy": 0.99609375,
+      "train_time_sec": 1.0172686999994767,
+      "inference_latency_ms": 0.6533320000016829
+    },
+    "MLP (small NN)": {
+      "cv_accuracy_mean": 0.9977008848855204,
+      "cv_accuracy_std": 0.0024109287637489978,
+      "test_accuracy": 0.99609375,
+      "train_time_sec": 3.1796811999993224,
+      "inference_latency_ms": 0.29147599999305385
+    }
+  },
+  "selected_model": "MLP (small NN)"
+}

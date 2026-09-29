@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reference chart — Marathi Sign Language Recognition</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="wrap">
+    <div class="top-nav">
+      <div class="brand">मराठी <span>Sign</span> Recognition</div>
+      <nav>
+        <a href="/">Live</a>
+        <a href="/reference">Reference chart</a>
+        <a href="/logs">Session log</a>
+      </nav>
+    </div>
+
+    <h1>Gesture reference chart</h1>
+    <p class="subtitle">
+      Every image below is a real sample from this project's own training
+      dataset, arranged in traditional varnamala order — vowels, then
+      consonants, then conjuncts.
+    </p>
+
+    {% for section in sections %}
+    <div class="ref-section">
+      <h2>{{ section.title }}</h2>
+      <div class="ref-grid">
+        {% for entry in section.entries %}
+        <div class="ref-cell">
+          <div class="ref-thumb">
+            <img src="{{ url_for('static', filename='reference_images/' ~ '%02d'|format(entry.label) ~ '.jpg') }}"
+                 alt="Hand sign for {{ entry.letter }}" loading="lazy">
+          </div>
+          <div class="ref-letter">{{ entry.letter }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Session log — Marathi Sign Language Recognition</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="wrap">
+    <div class="top-nav">
+      <div class="brand">मराठी <span>Sign</span> Recognition</div>
+      <nav>
+        <a href="/">Live</a>
+        <a href="/reference">Reference chart</a>
+        <a href="/logs">Session log</a>
+      </nav>
+    </div>
+
+    <h1>What's been recognized so far</h1>
+    <p class="subtitle">Every confident recognition from the live page is logged to the <code>recognition_logs</code> table in <code>data/marathi_slr.db</code>. Totals below: {{ total }} recognitions.</p>
+
+    {% if counts %}
+    <div class="bar-list">
+      {% set max_count = counts.values() | max %}
+      {% for letter, count in counts.items() %}
+      <div class="bar-row">
+        <div class="glyph">{{ letter }}</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width: {{ (count / max_count * 100) | round(1) }}%"></div>
+        </div>
+        <div class="count">{{ count }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      No recognitions logged yet. Head to the live page, show a gesture, and it'll show up here.
+    </div>
+    {% endif %}
+  </div>
+</body>
+</html>
